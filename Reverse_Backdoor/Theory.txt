@@ -1,0 +1,42 @@
+What is a Reverse Backdoor?
+
+    A reverse backdoor is a type of malware that allows an attacker to remotely control
+    a victim's computer or network, bypassing traditional security mechanisms.
+
+    How It Works:
+
+    Initial Infection:
+        The attacker places a malicious program (backdoor) on the victim’s machine.
+        This could be done through phishing, exploiting vulnerabilities, or other means.
+
+    Connection to Attacker: Once installed, the backdoor opens a communication channel
+        (usually over the internet) from the victim's machine to a remote server controlled by
+        the attacker.
+
+    Remote Access: The attacker can now remotely access the system, perform operations like
+        stealing data, installing additional malware, or taking control of the system.
+
+    Reverse Aspect: Unlike a traditional backdoor that waits for the attacker to connect to it,
+        a reverse backdoor forces the infected machine to initiate the connection to the attacker’s
+        server, making it harder for defenders to detect.
+    
+    Key Points:
+        Bypasses Firewalls/Intrusion Detection: The victim’s machine connects to the attacker’s server,
+        which may bypass firewall rules.
+
+        Stealth: The attacker doesn’t need to directly interact with the victim’s machine,
+        making it harder to trace.
+
+        Remote Control: Provides full control to the attacker, often without the victim’s knowledge.
+    
+    Common Uses:
+        Data theft
+        System manipulation
+        Surveillance
+        Deployment of additional malware
+
+    In short, a reverse backdoor is a stealthy, remote access tool that opens a pathway
+    for attackers to control a system from the inside out.
+
+
+

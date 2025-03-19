@@ -38,5 +38,13 @@ What is a Reverse Backdoor?
     In short, a reverse backdoor is a stealthy, remote access tool that opens a pathway
     for attackers to control a system from the inside out.
 
-
+    Bind/Direct connection:
+        The initial connection goes from the hacker to the victim machine.
+        The victim computer needs to be listening or waiting for incoming connections
+        on a specific port.
+    
+    Reverse Connection.
+        The initial connection goes from the Victim to the hacker's machine.
+        Much more useful and doesn't sound any alarms on the victims computer.
+    
 

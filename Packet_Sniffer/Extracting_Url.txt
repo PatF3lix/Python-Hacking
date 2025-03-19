@@ -1,0 +1,43 @@
+To extract the URL from an HTTP packet using Scapy,
+    you need to analyze the packet's payload for the HTTP request.
+    The URL is typically included in the HTTP request line (for example,
+    in a GET or POST request).
+    Here's how you can extract the URL from an HTTP packet in Scapy:
+
+Step-by-Step Approach:
+
+    Sniff HTTP Packets: First, you'll need to capture the packets on the network.
+    We'll filter for TCP packets on port 80 (the default HTTP port).
+
+    Process HTTP Request: Once we have the packet, we can check if it contains an HTTP
+    request (such as a GET or POST request). The URL will usually be part of the HTTP
+    request line (e.g., GET /index.html HTTP/1.1).
+
+    Extract the URL: The URL can be found by extracting the part of the request line
+    between the GET / or POST / and HTTP/.
+
+import scapy.all as scapy
+
+def sniff(interface):
+    scapy.sniff(iface=interface, store=False, prn=process_sniffed_packet, filter="tcp port 80")
+
+def process_sniffed_packet(packet):
+    if packet.haslayer(scapy.IP) and packet.haslayer(scapy.TCP):
+        raw_data = packet.load
+        if b"GET" in raw_data or b"POST" in raw_data:
+            # Extract the HTTP request
+            try:
+                # Check if it's a GET or POST request
+                if b"GET" in raw_data:
+                    # Extract URL for GET requests (e.g., GET /index.html HTTP/1.1)
+                    url = raw_data.split(b"GET ")[1].split(b" HTTP/")[0]
+                    print(f"GET URL: /{url.decode()}")
+                elif b"POST" in raw_data:
+                    # Extract URL for POST requests (e.g., POST /login HTTP/1.1)
+                    url = raw_data.split(b"POST ")[1].split(b" HTTP/")[0]
+                    print(f"POST URL: /{url.decode()}")
+            except Exception as e:
+                print(f"Error extracting URL: {e}")
+
+# Start sniffing on the specified interface (e.g., eth0)
+# sniff("eth0")  # Uncomment and use your network interface

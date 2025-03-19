@@ -1,0 +1,93 @@
+Why change the MAC address ?
+
+    Because this is a physical, unique address to each interface, to each network device, and Because
+    it is used to identify devices, then changing it will make you anonymous on the network.
+
+    Not only that, but mac address is often used by filters to prevent or allow devices to connect to networks and do specific tasks on the network.
+    Being able to change your mac address to another devices mac address will allow to impersonate this device.
+
+    1. Increase anonymity
+    2. Impersonate other devices
+    3. Bypass filters
+
+    MAC_CHANGER
+        Using a module to execute system commands 
+
+        the subprocess module contains a number of functions.
+        these functions allow us to execute system commands.
+        commands depend on the OS which executes the scripts.
+
+        Syntax
+            import subprocess
+            subprocess.call("COMMAND", Shell=True)
+    
+    Handling User Input
+
+        Easiest way of getting user input is through keyboard 
+        input() function prompts the user to enter a value
+
+            ex: age = input("What is your age ?")
+    
+    Handling command line arguments
+
+        import optparse
+
+        parser = optparse.OptionParser()
+
+        parser.add_option("-i", "--interface", dest="interface", help="Interface to change its MAC address")
+        parser.add_option("-m", "--mac", dest="new_mac", help="new MAC address")
+
+        (options, arguments) = parser.parse_args()
+        command = "ifconfig"
+
+        # print(options.interface + " " + options.new_mac)
+
+        subprocess.call([command, options.interface, "down"])
+
+        ex: sudo python mac_changer -i eth0 -m 00:11:22:33:44:55
+    
+    Functions 
+
+        set of instructions to carry out a task
+        can take input and return results
+        make the code clearer reusable and more abstract
+
+        ex: 
+            def function_nam(var1, var2, etc..)
+    
+    If/else conditions 
+
+        1-if/else 
+
+            if parser.interface:
+                code
+            else 
+                code
+        2-if/elif/else
+            if parser.interface:
+                code
+            elif parser.new_mac:
+                code
+            or with else:
+                code
+        3-if/if
+            if parser.interface:
+                code
+            if parser.new_mac:
+                code
+            rest of code...
+
+
+Section 3 
+    MAC Changer - Algorithm Design 
+
+    Regular Expressions 
+
+        Search for specific patterns within a string
+        Uses rules to match patterns
+
+        Great to tell a progrram what to look for in a large text.
+
+        Pythex.org -> https://pythex.org
+        More info on Regular Expressions -> https://www.tutorials.com/python_reg_expressions.html
+

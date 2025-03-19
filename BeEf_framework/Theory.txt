@@ -1,0 +1,12 @@
+Beef (Client Side Attacks)
+
+    Browser Exploitation Frameowrk allowing us to launch a number of attacks on a hooked target.
+    Target are hooked once they load a hook url 
+
+    - Dns spoof requests to a page containing the hook 
+    - Inject the hook in browsed pages (need to be MITM)
+    - Uses XSS exploit 
+    - Social engineer the target to open a hook page 
+
+    username: beef 
+    pwd: kali

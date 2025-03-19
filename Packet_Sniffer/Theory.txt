@@ -1,0 +1,73 @@
+Packet Sniffer 
+    Capture data flowing through an interface 
+    Filter this data 
+    Display interesting information such as:
+        Login info (username & passwords).
+        Visited websites
+        Images 
+        etc..
+    
+    - Scappy has a sniffer function 
+    - Can capture data sent to/from iface 
+    - Can call a function specified in prn on each packet.
+
+    Syntax: 
+        import scappy.all as scappy 
+        scappy.sniff(iface=[interface], prn=[call back function])
+
+    Extracting data from a speecific layerr 
+
+        Scapy-http Git Repo 
+        https://github.com/invernizzi/scapy-http
+
+        Berkeley Packet Filter (BPF) Syntax
+        http://biot.com/capstats/bpf.html
+        
+    def sniff(interface):
+    scapy.sniff(iface= interface, store= False, prn= process_sniffed_packet, filter= "")
+
+def process_sniffed_packet(packet):
+    if packet.haslayer(http.HTTPRequest):
+        print(packet)
+
+    how to extract the raw data
+    ChatGPT said:
+
+    To extract the raw data from a sniffed packet in your code,
+    you can access the raw bytes of the packet using packet.load.
+    This attribute contains the raw payload of the packet,
+    including all layers above the network layer (such as HTTP headers, body, etc.).
+
+    Here’s how you can modify your process_sniffed_packet function to extract and print the raw data:
+
+    import scapy.all as scapy
+    from scapy.layers import http
+
+    def sniff(interface):
+        scapy.sniff(iface=interface, store=False, prn=process_sniffed_packet, filter="")
+
+    def process_sniffed_packet(packet):
+        if packet.haslayer(http.HTTPRequest):
+            # Extract and print the raw data (the load field contains the payload)
+            raw_data = packet.load
+            print("Raw Data:\n", raw_data)
+
+    # Example usage
+    # sniff("eth0")  # specify the network interface you want to sniff on
+
+    Explanation:
+
+        packet.load: This contains the raw byte data of the packet.
+        packet.haslayer(http.HTTPRequest): This checks if the packet contains an HTTP request, and if so, the raw data from the payload is extracted.
+
+    You can then analyze or print the raw data.
+    If you're interested in specific parts of the HTTP request (like headers or body),
+    you may need additional parsing, but this will give you access to the entire raw data
+    for each HTTP request captured.
+
+
+Arp_Spoofer + Packet Sniffer
+
+    Target a computer on the same network 
+    arp_spoof to redirect flow of packets (become MITM).
+    Packet_sniffer to see URLs, usernames and passwords

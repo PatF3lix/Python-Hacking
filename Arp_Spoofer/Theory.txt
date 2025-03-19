@@ -1,0 +1,63 @@
+Arp Spoofer 
+
+    An ARP (Address Resolution Protocol) spoofer is a tool or technique used in network attacks
+    where an attacker sends false ARP messages over a local network. This typically results
+    in the attacker being able to associate their MAC address with the IP address of another
+    device (such as a router or another computer), causing network traffic to be redirected
+    through the attacker's machine.
+
+    Why ARP Spoofing is possible:
+        Clients accept responses even if they did not send a request.
+        Clients trust response without any form of verification.
+    
+    How ARP Spoofing Works:
+
+    ARP Basics: 
+        ARP is used to map IP addresses to MAC addresses within a local network.
+        When one device wants to communicate with another device,
+        it broadcasts an ARP request to find the MAC address of the target device,
+        and the target device replies with its MAC address.
+
+    ARP Spoofing Attack: 
+        In an ARP spoofing attack, the attacker sends fake (or "spoofed")
+        ARP replies, telling devices on the network that their IP address is associated with
+        the attacker’s MAC address, rather than the legitimate device.
+
+    Man-in-the-Middle (MITM): 
+        Once the attacker successfully "spoofs" the ARP tables on the network, it can intercept, 
+        modify, or even block communications between devices. 
+        This is often used for Man-in-the-Middle (MITM) attacks, 
+        where the attacker can eavesdrop on or alter the communication between two parties.
+    
+    Consequences:
+
+        Data Interception: 
+            Sensitive information, such as passwords or personal data, can be captured.
+
+        Denial of Service: 
+            The attacker can disrupt network traffic by dropping packets or preventing legitimate 
+            communication.
+            
+        Malware Injection: 
+            The attacker can inject malicious data or software into the communication stream.
+    
+    Protection Measures:
+
+    Static ARP entries: Manually configuring ARP tables to prevent automatic updates.
+    ARP monitoring tools: Tools that detect suspicious ARP activity on the network.
+    Encryption: Using encrypted communication channels (e.g., HTTPS) to mitigate data interception.
+
+    Handling Exceptions 
+
+        Try/except can be used to handle errors
+        Write default code in try block 
+        Write code to run if error occurs in except block
+
+    -> if error occurs exception block gets executed, otherwise try code gets executed
+
+    Syntax 
+        try: 
+            # default code to run 
+        Except[exception type]:
+            #Code to run when exception/error occurs 
+    

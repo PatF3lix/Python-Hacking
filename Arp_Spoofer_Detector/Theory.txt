@@ -1,0 +1,10 @@
+ARPSpoof_Detector
+
+    - Watch values for gateway mac in the arp table 
+        - Nice and simple, but will not detect an attack if the tool is executed after the attack 
+    
+    - Analyse "is-at" ARP response 
+        - Check if IP is gateway ip.
+        - Check if source mac is actually the gateway's mac 
+        - This method will detect attacks even if the attack was launched before the execution of the tool
+

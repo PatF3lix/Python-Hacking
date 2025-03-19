@@ -1,0 +1,49 @@
+Network Scanner
+
+    Discover all devices on the Network
+    Display their IP address
+    Display their MAC address
+
+    What is ARP & What its Used For ?
+        Scapy: create, send, sniff, dissect and manipulate network packets.
+    
+    Network Scanner Algorythm 
+
+        Goal -< Discover clients on network 
+
+        Steps:
+            1. Create arp request directed to broadcast MAC asking for IP.
+                Use ARP to ask who has target IP.
+                Set destination MAC to broadcast MAC.
+
+            2. Send packet and receive response.
+            3. Parse the response.
+            4. Print result.
+
+        Lists:
+            List of values/elements, all can be stored in one variable.
+            Ex:
+                lucky_numbers = [3,7,8,17,24]
+                Python will interpret this as 
+
+                index | 0 | 1 | 2 | 3 | 4 |
+                value | 3 | 7 | 8 | 17| 24|
+
+            Elements can be accessed using their index 
+                print(lucky_numbers[0]) # prints 3 
+        
+        Dictionaries:
+
+            Similar to lists but use key instead of index.
+
+            Ex:
+                target_client = {"mac":"00:11:22:33:44:55, "ip":"10.0.2.1", "os":"windows"}
+            Python will interpret this as 
+
+            Key         mac                 ip          os 
+            values   00:11:22:33:44:55    10.0.2.1    windows 
+
+            Elements can be accessed using their key 
+            print(target_client["mac"]) #prints 00:11:22:33:44:55
+            print(target_client["ip"]) #10.0.2.1
+            print(target_client["os]) #windows 

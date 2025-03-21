@@ -1,0 +1,27 @@
+Backdoors Sockets 
+
+    Problem 
+        - TCP is stream based
+        - Difficult to identify the end of the message/batch
+    
+    Solution:
+        - Make sure the message is well defined.
+        - Implement a protocol that send and receive methods conform to.
+            - Send size of message as header.
+            - Append a end-of-message mark to the end of each message.
+            - Serialize the message 
+    
+    Benefits:
+        1. Message is well defined, receiver knows if message is incomplete 
+        2. Can be used to transfer objects (lists, dicts..etc)
+    
+
+            Server                  <---------------        Client
+    Converts well-defined stream                        Converts object to a stream
+    of bytes back into an object.                       of well-defined bytes.
+
+    Serialization
+        - Json and Pickle are common solutions
+        - Json (Javascript Object Notation) is implemented in many prog. languages
+        - Represents objects as text.
+        - Widely used when transferring data between clients and servers.

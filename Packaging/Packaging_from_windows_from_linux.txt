@@ -1,0 +1,10 @@
+Packaging for Windows from Linux 
+
+    - For best results package the program from the same OS as the target.
+        - EG if target is Windows then package the program from a Windows
+            computer with a python interpreter
+        
+        - Install Windows python interpreter on Linux
+        - Use it to convert python programs to Windows executables 
+    
+    

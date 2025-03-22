@@ -1,0 +1,12 @@
+Persistance
+
+    - Persistance programs start when the system starts
+        - Backdoors -> maintain our access
+        - Keyloggers -> spy on target.
+        - Reporters -> send report on startup.
+        - etc...
+    
+    cmd prompt:
+        reg add HKCU\Software\Microsoft\windows\CurrentVersion\Run /v (name) /t REG_SZ /d (file location)
+        ex:
+            reg add HKCU\Software\Microsoft\windows\CurrentVersion\Run /v test /t REG_SZ /d "C:/test.exe"

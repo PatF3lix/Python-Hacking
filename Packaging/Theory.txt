@@ -1,0 +1,43 @@
+Packaging
+
+    - Convert python program into an executable that:
+        - Packages all program files into a single executable
+        - Works without a python interpreter
+        - Get executed when double-clicked 
+    
+    - For best results package the program from the same OS as the target.
+        - EG if target is Windows then package the program from a Windows computer with a python interpreter.
+    
+
+    1- locate python.exe on your machine
+        on this machine its at : C:\Users\MasterJedi\AppData\Local\Programs\Python\Python313
+
+    2- install pyinterpreter
+        python.exe -m pip install pyinstaller
+
+        - This will install pyinstaller in the /Script folder as pyinstaller.
+            This is the executable that we'll use in order to convert our own Python Programs
+            into .exe 
+    
+    3- to convert a .py file to an executable
+        using file explorer travel to the location of the .py file you want to transform to a .exe
+        use the path to the pyinstaller followed by the file name.
+            C:\Users\MasterJedi\AppData\Local\Programs\Python\Python313\Scripts\pyinstaller.exe reverse_backdoor.py --onefile
+            the --onefile tells pyinstaller to package everything into a single file.
+
+    Running Executables Silentely
+
+        To run the program without having a console appear you more argument must be added 
+        which is --noconsole
+
+        C:\Users\MasterJedi\AppData\Local\Programs\Python\Python313\Scripts\pyinstaller.exe reverse_backdoor.py --onefile --noconsole
+
+        We also have to find a way to deal with the stderr and stdout
+            This is because we use the function check_output else we would not need to.
+            This is where we had to modify our code:
+            def execute_system_command(self, command):
+                DEVNULL = open(os.devnull, 'wb')
+                result = subprocess.check_output(full_cmd, stderr=DEVNULL, stdin=DEVNULL, shell=True)
+        
+        then recompile the file 
+            C:\Users\MasterJedi\AppData\Local\Programs\Python\Python313\Scripts\pyinstaller.exe reverse_backdoor.py --onefile --noconsole

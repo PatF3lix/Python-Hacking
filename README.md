@@ -85,7 +85,7 @@ python arp_spoofer.py
 
 You may need to modify the configuration or specify IP addresses, network interfaces, etc., depending on the tool you're using.
 
-Requirements
+## Requirements
 
 Before running any of the tools, ensure you have the following installed:
 
@@ -93,7 +93,7 @@ Python 3.x
 
 Necessary Python libraries for specific tools. You can install them via pip (e.g., scapy, requests, smtplib, etc.).
 
-Installation
+## Installation
 
 1. Clone this repository to your local machine:
 ```bash
@@ -106,7 +106,7 @@ pip install -r requirements.txt
 ```
 You may need to manually install additional libraries depending on the tool (e.g., scapy, keyboard, etc.).
 
-Contributing
+## Contributing
 
 This repository is open for contribution. If you have new tools to add or improvements to existing tools, feel free to fork the repository, make changes, and submit a pull request.
 
@@ -118,7 +118,7 @@ Add comments and documentation for all new functions and tools.
 
 Test your tools on local systems and networks only, and ensure they don't cause any harm.
 
-License
+## License
 
 This project is licensed under the MIT License – see the LICENSE
  file for details.

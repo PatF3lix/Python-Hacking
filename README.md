@@ -120,11 +120,27 @@ Test your tools on local systems and networks only, and ensure they don't cause 
 
 ## License
 
-This project is licensed under the MIT License – see the LICENSE
- file for details.
-
 Notes
 
-Educational Use Only: These tools are intended for learning and experimentation. Use them in safe and controlled environments such as your own personal network, or in environments where you have explicit permission to conduct security tests.
+Educational Use Only:
 
-Security Best Practices: Always be cautious when testing security tools, and ensure you're compliant with local laws and regulations.
+This project was created strictly for educational purposes as part of the course
+
+“Learn Python & Ethical Hacking From Scratch”, instructed by ZAID AL QURAISHI.
+
+All tools and examples were developed to support learning, experimentation, and understanding of cybersecurity concepts.
+
+
+Ethical & Legal Responsibility:
+
+The content of this project is intended to be used only in safe, 
+controlled environments such as personal systems or networks where 
+explicit permission has been granted. Unauthorized access to systems, 
+networks, or data is illegal and unethical.
+
+
+Security Best Practices:
+
+Always follow ethical hacking guidelines, respect local laws and 
+regulations, and practice responsible use when working with 
+security-related tools.
